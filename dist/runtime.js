@@ -1,4 +1,4 @@
-import { createJsxNode, isValidJsxNode } from "./main.js";
+import { createJsxNode, isJsxNode } from "./main.js";
 function parseChildren(children) {
     const childrenArray = Array.isArray(children) ? children : [children];
     const elements = [];
@@ -13,7 +13,7 @@ function parseChildren(children) {
             }));
         }
         else if (typeof child === "object") {
-            if (isValidJsxNode(child)) {
+            if (isJsxNode(child)) {
                 elements.push(child);
             }
             else {

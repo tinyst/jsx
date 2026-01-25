@@ -6,8 +6,8 @@ export function createJsxNode(input) {
         ...input,
     };
 }
-export function isValidJsxNode(el) {
-    return el && typeof el === "object" && JSX_SYMBOL in el;
+export function isJsxNode(node) {
+    return node && typeof node === "object" && JSX_SYMBOL in node;
 }
 export function jsxNodeWalk(node, handlers) {
     handlers.enter?.(node);

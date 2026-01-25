@@ -11,8 +11,8 @@ export function createJsxNode(input: JsxElementNodeCreateInput | JsxFragmentNode
   };
 }
 
-export function isValidJsxNode(el: any): el is JsxNode {
-  return el && typeof el === "object" && JSX_SYMBOL in el;
+export function isJsxNode(node: any): node is JsxNode {
+  return node && typeof node === "object" && JSX_SYMBOL in node;
 }
 
 export function jsxNodeWalk(node: JsxNode, handlers: JsxNodeWalkHandlers) {

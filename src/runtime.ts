@@ -1,4 +1,4 @@
-import { createJsxNode, isValidJsxNode } from "./main.js";
+import { createJsxNode, isJsxNode } from "./main.js";
 import type { JSX, JsxComponent, JsxElementNode, JsxNode } from "./types.js";
 
 export type * from "./types.js";
@@ -20,7 +20,7 @@ function parseChildren(children: any): JsxNode[] {
     }
 
     else if (typeof child === "object") {
-      if (isValidJsxNode(child)) {
+      if (isJsxNode(child)) {
         elements.push(child);
       }
 
