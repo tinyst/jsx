@@ -1,0 +1,34 @@
+{
+  "name": "@tinyst/jsx",
+  "author": "Wirune Kaewjai",
+  "version": "0.0.1",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    "./jsx-dev-runtime": {
+      "import": "./dist/runtime.js",
+      "types": "./dist/runtime.d.ts"
+    },
+    "./jsx-runtime": {
+      "import": "./dist/runtime.js",
+      "types": "./dist/runtime.d.ts"
+    },
+    ".": {
+      "import": "./dist/main.js",
+      "types": "./dist/main.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "rm -rf dist && tsc",
+    "prepare": "husky install"
+  },
+  "peerDependencies": {
+    "@types/node": "^25.0.10",
+    "typescript": "^5.9.3"
+  },
+  "devDependencies": {
+    "husky": "^8.0.0"
+  }
+}
