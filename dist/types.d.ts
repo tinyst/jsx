@@ -86,38 +86,39 @@ export type JsxAttributes = Partial<{
     [key: string]: any;
 }>;
 export type JsxChildren = string | number | boolean | object | null | undefined;
-export type JsxComponent<T extends object = {}> = (props: T) => JSX.Element;
-export type JsxElementCreateInput = {
+export type JsxComponent<T extends object = {}> = (props: T) => JsxNode;
+export type JsxElementNodeCreateInput = {
     kind: "element";
     name: string;
     attrs: {
         [key in keyof JsxAttributes]: string | number | true | object;
     };
-    children: JSX.Element[];
+    children: JsxNode[];
 };
-export type JsxFragmentCreateInput = {
+export type JsxFragmentNodeCreateInput = {
     kind: "fragment";
-    children: JSX.Element[];
+    children: JsxNode[];
 };
-export type JsxValueCreateInput = {
+export type JsxValueNodeCreateInput = {
     kind: "value";
     value: string | number | boolean | object;
 };
-export type JsxElement = JsxElementCreateInput & {
+export type JsxElementNode = JsxElementNodeCreateInput & {
     [JSX_SYMBOL]: true;
 };
-export type JsxFragment = JsxFragmentCreateInput & {
+export type JsxFragmentNode = JsxFragmentNodeCreateInput & {
     [JSX_SYMBOL]: true;
 };
-export type JsxValue = JsxValueCreateInput & {
+export type JsxValueNode = JsxValueNodeCreateInput & {
     [JSX_SYMBOL]: true;
 };
-export type JsxWalkHandlers = {
-    enter?: (element: JSX.Element) => void;
-    exit?: (element: JSX.Element) => void;
+export type JsxNode = JsxElementNode | JsxFragmentNode | JsxValueNode;
+export type JsxNodeWalkHandlers = {
+    enter?: (element: JsxNode) => void;
+    exit?: (element: JsxNode) => void;
 };
 export declare namespace JSX {
-    type Element = JsxElement | JsxFragment | JsxValue;
+    type Element = JsxNode;
     interface IntrinsicElements {
         html: JsxAttributes;
         area: JsxAttributes;

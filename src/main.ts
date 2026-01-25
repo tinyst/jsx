@@ -1,30 +1,30 @@
 import { JSX_SYMBOL } from "./constants.js";
-import type { JSX, JsxElement, JsxElementCreateInput, JsxFragmentCreateInput, JsxValue, JsxValueCreateInput, JsxWalkHandlers } from "./types.js";
+import type { JSX, JsxElementNode, JsxElementNodeCreateInput, JsxFragmentNodeCreateInput, JsxNode, JsxNodeWalkHandlers, JsxValueNode, JsxValueNodeCreateInput } from "./types.js";
 
 export type * from "./types.js";
 
 // --- HELPER ---
-export function createJsxElement(input: JsxElementCreateInput | JsxFragmentCreateInput | JsxValueCreateInput): JSX.Element {
+export function createJsxNode(input: JsxElementNodeCreateInput | JsxFragmentNodeCreateInput | JsxValueNodeCreateInput): JsxNode {
   return {
     [JSX_SYMBOL]: true,
     ...input,
   };
 }
 
-export function isJsxElement(el: any): el is JSX.Element {
+export function isValidJsxNode(el: any): el is JsxNode {
   return el && typeof el === "object" && JSX_SYMBOL in el;
 }
 
-export function walkJsxElement(element: JSX.Element, handlers: JsxWalkHandlers) {
-  handlers.enter?.(element);
+export function jsxNodeWalk(node: JsxNode, handlers: JsxNodeWalkHandlers) {
+  handlers.enter?.(node);
 
-  if (element.kind === "element" || element.kind === "fragment") {
-    for (const child of element.children) {
-      walkJsxElement(child, handlers);
+  if (node.kind === "element" || node.kind === "fragment") {
+    for (const child of node.children) {
+      jsxNodeWalk(child, handlers);
     }
   }
 
-  handlers.exit?.(element);
+  handlers.exit?.(node);
 }
 
 // --- RENDER ---
@@ -63,7 +63,7 @@ function escapeHTML(str: string): string {
   return str.replace(/[&<>"']/g, (m) => HTML_ENTITIES[m] ?? m);
 }
 
-function renderValue(value: JsxValue["value"]) {
+function renderValue(value: JsxValueNode["value"]) {
   if (typeof value === "string") {
     return value;
   }
@@ -75,7 +75,7 @@ function renderValue(value: JsxValue["value"]) {
   return JSON.stringify(value);
 }
 
-function renderChildren(elements: JSX.Element[]) {
+function renderChildren(elements: JsxNode[]) {
   const texts: string[] = [];
 
   for (const element of elements) {
@@ -85,7 +85,7 @@ function renderChildren(elements: JSX.Element[]) {
   return texts.join("");
 }
 
-function renderAttributes(attrs: JsxElement["attrs"]) {
+function renderAttributes(attrs: JsxElementNode["attrs"]) {
   const entries: string[] = [];
 
   for (const [key, value] of Object.entries(attrs)) {
@@ -109,7 +109,7 @@ function renderAttributes(attrs: JsxElement["attrs"]) {
   return entries.join("");
 }
 
-function renderElement(element: JsxElement): string {
+function renderElement(element: JsxElementNode): string {
   const texts: string[] = [];
 
   if (ROOT_TAGS.has(element.name)) {
@@ -125,7 +125,7 @@ function renderElement(element: JsxElement): string {
   return texts.join("");
 }
 
-export function renderToString(element: JSX.Element) {
+export function renderToString(element: JsxNode) {
   switch (element.kind) {
     case "element":
       return renderElement(element);

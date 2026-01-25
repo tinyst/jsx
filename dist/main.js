@@ -1,22 +1,22 @@
 import { JSX_SYMBOL } from "./constants.js";
 // --- HELPER ---
-export function createJsxElement(input) {
+export function createJsxNode(input) {
     return {
         [JSX_SYMBOL]: true,
         ...input,
     };
 }
-export function isJsxElement(el) {
+export function isValidJsxNode(el) {
     return el && typeof el === "object" && JSX_SYMBOL in el;
 }
-export function walkJsxElement(element, handlers) {
-    handlers.enter?.(element);
-    if (element.kind === "element" || element.kind === "fragment") {
-        for (const child of element.children) {
-            walkJsxElement(child, handlers);
+export function jsxNodeWalk(node, handlers) {
+    handlers.enter?.(node);
+    if (node.kind === "element" || node.kind === "fragment") {
+        for (const child of node.children) {
+            jsxNodeWalk(child, handlers);
         }
     }
-    handlers.exit?.(element);
+    handlers.exit?.(node);
 }
 // --- RENDER ---
 const ROOT_TAGS = new Set([

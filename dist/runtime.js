@@ -1,4 +1,4 @@
-import { createJsxElement, isJsxElement } from "./main.js";
+import { createJsxNode, isValidJsxNode } from "./main.js";
 function parseChildren(children) {
     const childrenArray = Array.isArray(children) ? children : [children];
     const elements = [];
@@ -7,17 +7,17 @@ function parseChildren(children) {
             continue;
         }
         else if (typeof child === "string" || typeof child === "number" || typeof child === "boolean") {
-            elements.push(createJsxElement({
+            elements.push(createJsxNode({
                 kind: "value",
                 value: child,
             }));
         }
         else if (typeof child === "object") {
-            if (isJsxElement(child)) {
+            if (isValidJsxNode(child)) {
                 elements.push(child);
             }
             else {
-                elements.push(createJsxElement({
+                elements.push(createJsxNode({
                     kind: "value",
                     value: child,
                 }));
@@ -58,14 +58,14 @@ function parse(type, props) {
         return type(props ?? {});
     }
     if (typeof type === "string") {
-        return createJsxElement({
+        return createJsxNode({
             kind: "element",
             name: type,
             attrs: parseAttributes(props),
             children: parseChildren(props?.children),
         });
     }
-    return createJsxElement({
+    return createJsxNode({
         kind: "fragment",
         children: parseChildren(props?.children),
     });

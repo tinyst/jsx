@@ -1,6 +1,6 @@
-import type { JSX, JsxElementCreateInput, JsxFragmentCreateInput, JsxValueCreateInput, JsxWalkHandlers } from "./types.js";
+import type { JsxElementNodeCreateInput, JsxFragmentNodeCreateInput, JsxNode, JsxNodeWalkHandlers, JsxValueNodeCreateInput } from "./types.js";
 export type * from "./types.js";
-export declare function createJsxElement(input: JsxElementCreateInput | JsxFragmentCreateInput | JsxValueCreateInput): JSX.Element;
-export declare function isJsxElement(el: any): el is JSX.Element;
-export declare function walkJsxElement(element: JSX.Element, handlers: JsxWalkHandlers): void;
-export declare function renderToString(element: JSX.Element): string;
+export declare function createJsxNode(input: JsxElementNodeCreateInput | JsxFragmentNodeCreateInput | JsxValueNodeCreateInput): JsxNode;
+export declare function isValidJsxNode(el: any): el is JsxNode;
+export declare function jsxNodeWalk(node: JsxNode, handlers: JsxNodeWalkHandlers): void;
+export declare function renderToString(element: JsxNode): string;

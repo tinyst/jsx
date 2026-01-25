@@ -1,9 +1,9 @@
-import { createJsxElement, isJsxElement } from "./main.js";
-import type { JSX, JsxComponent, JsxElement } from "./types.js";
+import { createJsxNode, isValidJsxNode } from "./main.js";
+import type { JSX, JsxComponent, JsxElementNode, JsxNode } from "./types.js";
 
 export type * from "./types.js";
 
-function parseChildren(children: any): JSX.Element[] {
+function parseChildren(children: any): JsxNode[] {
   const childrenArray = Array.isArray(children) ? children : [children];
   const elements: JSX.Element[] = [];
 
@@ -13,19 +13,19 @@ function parseChildren(children: any): JSX.Element[] {
     }
 
     else if (typeof child === "string" || typeof child === "number" || typeof child === "boolean") {
-      elements.push(createJsxElement({
+      elements.push(createJsxNode({
         kind: "value",
         value: child,
       }));
     }
 
     else if (typeof child === "object") {
-      if (isJsxElement(child)) {
+      if (isValidJsxNode(child)) {
         elements.push(child);
       }
 
       else {
-        elements.push(createJsxElement({
+        elements.push(createJsxNode({
           kind: "value",
           value: child,
         }));
@@ -40,12 +40,12 @@ function parseChildren(children: any): JSX.Element[] {
   return elements;
 }
 
-function parseAttributes(props?: Record<string, any>): JsxElement["attrs"] {
+function parseAttributes(props?: Record<string, any>): JsxElementNode["attrs"] {
   if (!props) {
     return {};
   }
 
-  const attrs: JsxElement["attrs"] = {};
+  const attrs: JsxElementNode["attrs"] = {};
 
   for (const key in props) {
     if (key === "children") {
@@ -72,13 +72,13 @@ function parseAttributes(props?: Record<string, any>): JsxElement["attrs"] {
   return attrs;
 }
 
-function parse(type: JsxComponent<any> | string | undefined, props?: Record<string, any>): JSX.Element {
+function parse(type: JsxComponent<any> | string | undefined, props?: Record<string, any>): JsxNode {
   if (typeof type === "function") {
     return type(props ?? {});
   }
 
   if (typeof type === "string") {
-    return createJsxElement({
+    return createJsxNode({
       kind: "element",
       name: type,
       attrs: parseAttributes(props),
@@ -86,7 +86,7 @@ function parse(type: JsxComponent<any> | string | undefined, props?: Record<stri
     });
   }
 
-  return createJsxElement({
+  return createJsxNode({
     kind: "fragment",
     children: parseChildren(props?.children),
   });
