@@ -3,11 +3,15 @@ import type { JSX, JsxComponent, JsxElementNode, JsxNode } from "./types.js";
 
 export type * from "./types.js";
 
+function isIterable(value: any): value is Iterable<any> {
+  return value && typeof value[Symbol.iterator] === "function";
+}
+
 function parseChildren(children: any): JsxNode[] {
-  const childrenArray = Array.isArray(children) ? children : [children];
+  const iterable = Array.isArray(children) || isIterable(children) ? children : [children];
   const elements: JSX.Element[] = [];
 
-  for (const child of childrenArray) {
+  for (const child of iterable) {
     if (typeof child === "undefined" || child === null) {
       continue;
     }

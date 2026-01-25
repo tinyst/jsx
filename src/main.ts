@@ -1,5 +1,5 @@
 import { JSX_SYMBOL } from "./constants.js";
-import type { JSX, JsxElementNode, JsxElementNodeCreateInput, JsxFragmentNodeCreateInput, JsxNode, JsxNodeWalkHandlers, JsxValueNode, JsxValueNodeCreateInput } from "./types.js";
+import type { JsxElementNode, JsxElementNodeCreateInput, JsxFragmentNodeCreateInput, JsxNode, JsxNodeWalkHandlers, JsxValueNode, JsxValueNodeCreateInput } from "./types.js";
 
 export type * from "./types.js";
 

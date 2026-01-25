@@ -1,8 +1,11 @@
 import { createJsxNode, isJsxNode } from "./main.js";
+function isIterable(value) {
+    return value && typeof value[Symbol.iterator] === "function";
+}
 function parseChildren(children) {
-    const childrenArray = Array.isArray(children) ? children : [children];
+    const iterable = Array.isArray(children) || isIterable(children) ? children : [children];
     const elements = [];
-    for (const child of childrenArray) {
+    for (const child of iterable) {
         if (typeof child === "undefined" || child === null) {
             continue;
         }
