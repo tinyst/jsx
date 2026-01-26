@@ -82,9 +82,9 @@ export function infer<T extends {
 }>(component: ReturnType<typeof define<T>>) {
   return {
     name: component.name,
-    state: fieldPath<T["state"]>() as T["state"],
-    refs: fieldPath<T["refs"] extends object ? T["refs"] : {}>() as T["refs"] extends object ? T["refs"] : {},
-    actions: fieldPath<T["actions"] extends object ? T["actions"] : {}>() as T["actions"] extends object ? T["actions"] : {},
+    state: fieldPath<T["state"]>(),
+    refs: fieldPath<T["refs"] extends object ? T["refs"] : {}>(),
+    actions: fieldPath<T["actions"] extends object ? T["actions"] : {}>(),
   };
 }
 

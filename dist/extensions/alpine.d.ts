@@ -65,9 +65,9 @@ export declare function infer<T extends {
     };
 }>(component: ReturnType<typeof define<T>>): {
     name: string;
-    state: T["state"];
-    refs: T["refs"] extends object ? T["refs"] : {};
-    actions: T["actions"] extends object ? T["actions"] : {};
+    state: FieldPath<T["state"]>;
+    refs: FieldPath<T["refs"] extends object ? T["refs"] : {}>;
+    actions: FieldPath<T["actions"] extends object ? T["actions"] : {}>;
 };
 export type ClassValues = {
     [key: string]: string | number | boolean | ClassValues;
