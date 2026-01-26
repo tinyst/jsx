@@ -1,7 +1,7 @@
 {
   "name": "@tinyst/jsx",
   "author": "Wirune Kaewjai",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "type": "module",
   "files": [
     "dist"
@@ -14,6 +14,10 @@
     "./jsx-runtime": {
       "import": "./dist/runtime.js",
       "types": "./dist/runtime.d.ts"
+    },
+    "./ext-alpine": {
+      "import": "./dist/extensions/alpine.js",
+      "types": "./dist/extensions/alpine.d.ts"
     },
     "./ext-jinja": {
       "import": "./dist/extensions/jinja.js",
@@ -28,11 +32,10 @@
     "build": "rm -rf dist && tsc",
     "prepare": "husky install"
   },
-  "peerDependencies": {
-    "@types/node": "^25.0.10",
-    "typescript": "^5.9.3"
-  },
   "devDependencies": {
-    "husky": "^8.0.0"
+    "@tinyst/fieldpath": "github:tinyst/fieldpath#e70e2354ba674143c18b2b2bcd6d41ab4eaaedeb",
+    "@types/node": "^25.0.10",
+    "husky": "^8.0.0",
+    "typescript": "^5.9.3"
   }
 }

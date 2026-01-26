@@ -44,6 +44,10 @@ export type JsonObject = {
 /** @description helper function for JSON string (server-side props) inside script tag */
 export const json = <T extends JsonObject>(props: T): string => {
   const stringify = (input: JsonObject) => {
+    if (Symbol.toPrimitive in input) {
+      return String(input);
+    }
+
     const entries: [string, string][] = [];
 
     for (const [key, value] of Object.entries(input)) {

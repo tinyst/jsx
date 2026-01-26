@@ -32,6 +32,9 @@ export function b(value) {
 /** @description helper function for JSON string (server-side props) inside script tag */
 export const json = (props) => {
     const stringify = (input) => {
+        if (Symbol.toPrimitive in input) {
+            return String(input);
+        }
         const entries = [];
         for (const [key, value] of Object.entries(input)) {
             if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
