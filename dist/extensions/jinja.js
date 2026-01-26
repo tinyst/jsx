@@ -17,6 +17,8 @@ export function decode(input) {
         return fromHex(capture);
     });
 }
+/** @description convert to "all encoded data" back to Jinja syntax */
+export const resolveJinjaSyntax = decode;
 /** @description helper function to wrap jinja expression for HTML attribute, innerHTML, JSON value, and JSX Prop */
 export function e(value) {
     return encode(`{{ ${value} }}`);

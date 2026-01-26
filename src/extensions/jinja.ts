@@ -22,6 +22,9 @@ export function decode<T>(input: T) {
   });
 }
 
+/** @description convert to "all encoded data" back to Jinja syntax */
+export const resolveJinjaSyntax = decode;
+
 /** @description helper function to wrap jinja expression for HTML attribute, innerHTML, JSON value, and JSX Prop */
 export function e<T>(value: T): string {
   return encode(`{{ ${value} }}`);

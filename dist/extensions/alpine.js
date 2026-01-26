@@ -36,7 +36,8 @@ export function cn(props) {
 export function falsy(value) {
     return `!${value}`;
 }
-export function resolveSyntax(root) {
+/** @description resolve AlpineJS syntax on JSX node */
+export function resolveAlpineSyntaxOnJsx(root) {
     jsxNodeWalk(root, {
         enter(node) {
             if (node.kind === "element") {
@@ -48,7 +49,7 @@ export function resolveSyntax(root) {
                         attrs[`@${name.slice(5).split("_").join(".")}`] = value;
                     }
                     else if (name.startsWith("x-bind-")) {
-                        attrs[`:${name.slice(7)}`] = value;
+                        attrs[`:${name.slice(7).split("_").join(".")}`] = value;
                     }
                     else {
                         attrs[name] = value;
@@ -57,5 +58,11 @@ export function resolveSyntax(root) {
                 node.attrs = attrs;
             }
         }
+    });
+}
+/** @description using regex to replace alpine syntax on HTML directly */
+export function resolveAlpineSyntax(html) {
+    return html.replace(/\s(x-on-|x-bind-)([^=]+)=/g, (_, prefix, name) => {
+        return ` ${prefix === "x-on-" ? "@" : ":"}${name.replace("_", ".")}=`;
     });
 }

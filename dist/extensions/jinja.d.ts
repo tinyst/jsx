@@ -2,6 +2,8 @@
 export declare function encode(input: string): string;
 /** @description convert to "all encoded data" back to Jinja syntax */
 export declare function decode<T>(input: T): string;
+/** @description convert to "all encoded data" back to Jinja syntax */
+export declare const resolveJinjaSyntax: typeof decode;
 /** @description helper function to wrap jinja expression for HTML attribute, innerHTML, JSON value, and JSX Prop */
 export declare function e<T>(value: T): string;
 /** @description helper function to wrap jinja expression inside double quotes for JSON value string */

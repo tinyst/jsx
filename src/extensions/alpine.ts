@@ -123,7 +123,8 @@ export function falsy(value: FieldPath<any>): string {
   return `!${value}`;
 }
 
-export function resolveSyntax(root: JsxNode) {
+/** @description resolve AlpineJS syntax on JSX node */
+export function resolveAlpineSyntaxOnJsx(root: JsxNode) {
   jsxNodeWalk(root, {
     enter(node) {
       if (node.kind === "element") {
@@ -137,7 +138,7 @@ export function resolveSyntax(root: JsxNode) {
           }
 
           else if (name.startsWith("x-bind-")) {
-            attrs[`:${name.slice(7)}`] = value;
+            attrs[`:${name.slice(7).split("_").join(".")}`] = value;
           }
 
           else {
@@ -148,5 +149,12 @@ export function resolveSyntax(root: JsxNode) {
         node.attrs = attrs;
       }
     }
+  });
+}
+
+/** @description using regex to replace alpine syntax on HTML directly */
+export function resolveAlpineSyntax(html: string): string {
+  return html.replace(/\s(x-on-|x-bind-)([^=]+)=/g, (_, prefix, name) => {
+    return ` ${prefix === "x-on-" ? "@" : ":"}${name.replace("_", ".")}=`;
   });
 }

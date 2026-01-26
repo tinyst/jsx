@@ -75,4 +75,7 @@ export type ClassValues = {
 };
 export declare function cn<T extends ClassValues>(props: T): string;
 export declare function falsy(value: FieldPath<any>): string;
-export declare function resolveSyntax(root: JsxNode): void;
+/** @description resolve AlpineJS syntax on JSX node */
+export declare function resolveAlpineSyntaxOnJsx(root: JsxNode): void;
+/** @description using regex to replace alpine syntax on HTML directly */
+export declare function resolveAlpineSyntax(html: string): string;
