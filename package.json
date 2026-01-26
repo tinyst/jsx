@@ -15,6 +15,10 @@
       "import": "./dist/runtime.js",
       "types": "./dist/runtime.d.ts"
     },
+    "./ext-jinja": {
+      "import": "./dist/extensions/jinja.js",
+      "types": "./dist/extensions/jinja.d.ts"
+    },
     ".": {
       "import": "./dist/main.js",
       "types": "./dist/main.d.ts"
