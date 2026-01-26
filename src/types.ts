@@ -135,7 +135,7 @@ export type JsxCustomValueNode = JsxCustomValueNodeCreateInput & {
 
 export type JsxNode = JsxElementNode | JsxFragmentNode | JsxPrimitiveValueNode | JsxCustomValueNode;
 
-export type JsxNodeWalkHandlers = {
+export type JsxNodeWalkHandler = {
   enter?: (element: JsxNode) => void;
   exit?: (element: JsxNode) => void;
 };

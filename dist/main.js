@@ -9,14 +9,14 @@ export function createJsxNode(input) {
 export function isJsxNode(node) {
     return node && typeof node === "object" && JSX_SYMBOL in node;
 }
-export function jsxNodeWalk(node, handlers) {
-    handlers.enter?.(node);
+export function jsxNodeWalk(node, handler) {
+    handler.enter?.(node);
     if (node.kind === "element" || node.kind === "fragment") {
         for (const child of node.children) {
-            jsxNodeWalk(child, handlers);
+            jsxNodeWalk(child, handler);
         }
     }
-    handlers.exit?.(node);
+    handler.exit?.(node);
 }
 // --- RENDER ---
 const ROOT_TAGS = new Set([

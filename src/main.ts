@@ -1,5 +1,5 @@
 import { JSX_SYMBOL } from "./constants.js";
-import type { JsxCustomValueNode, JsxCustomValueNodeCreateInput, JsxElementNode, JsxElementNodeCreateInput, JsxFragmentNodeCreateInput, JsxNode, JsxNodeWalkHandlers, JsxPrimitiveValueNode, JsxPrimitiveValueNodeCreateInput } from "./types.js";
+import type { JsxCustomValueNode, JsxCustomValueNodeCreateInput, JsxElementNode, JsxElementNodeCreateInput, JsxFragmentNodeCreateInput, JsxNode, JsxNodeWalkHandler, JsxPrimitiveValueNode, JsxPrimitiveValueNodeCreateInput } from "./types.js";
 
 export type * from "./types.js";
 
@@ -15,16 +15,16 @@ export function isJsxNode(node: any): node is JsxNode {
   return node && typeof node === "object" && JSX_SYMBOL in node;
 }
 
-export function jsxNodeWalk(node: JsxNode, handlers: JsxNodeWalkHandlers) {
-  handlers.enter?.(node);
+export function jsxNodeWalk(node: JsxNode, handler: JsxNodeWalkHandler) {
+  handler.enter?.(node);
 
   if (node.kind === "element" || node.kind === "fragment") {
     for (const child of node.children) {
-      jsxNodeWalk(child, handlers);
+      jsxNodeWalk(child, handler);
     }
   }
 
-  handlers.exit?.(node);
+  handler.exit?.(node);
 }
 
 // --- RENDER ---

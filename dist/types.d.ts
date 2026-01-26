@@ -121,7 +121,7 @@ export type JsxCustomValueNode = JsxCustomValueNodeCreateInput & {
     [JSX_SYMBOL]: true;
 };
 export type JsxNode = JsxElementNode | JsxFragmentNode | JsxPrimitiveValueNode | JsxCustomValueNode;
-export type JsxNodeWalkHandlers = {
+export type JsxNodeWalkHandler = {
     enter?: (element: JsxNode) => void;
     exit?: (element: JsxNode) => void;
 };
