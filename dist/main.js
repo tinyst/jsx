@@ -16,6 +16,11 @@ export function jsxNodeWalk(node, handler) {
             jsxNodeWalk(child, handler);
         }
     }
+    else if (node.kind === "custom") {
+        if (isJsxNode(node.value)) {
+            jsxNodeWalk(node.value, handler);
+        }
+    }
     handler.exit?.(node);
 }
 // --- RENDER ---
