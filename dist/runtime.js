@@ -1,9 +1,9 @@
 import { createJsxNode, isJsxNode } from "./main.js";
-function isIterable(value) {
-    return value && typeof value[Symbol.iterator] === "function";
+function isIterableOrArray(value) {
+    return Array.isArray(value) || (value && typeof value === "object" && typeof value[Symbol.iterator] === "function");
 }
 function parseChildren(children) {
-    const iterable = Array.isArray(children) || isIterable(children) ? children : [children];
+    const iterable = isIterableOrArray(children) ? children : [children];
     const elements = [];
     for (const child of iterable) {
         if (typeof child === "undefined" || child === null) {
@@ -11,23 +11,20 @@ function parseChildren(children) {
         }
         else if (typeof child === "string" || typeof child === "number" || typeof child === "boolean") {
             elements.push(createJsxNode({
-                kind: "value",
+                kind: "primitive",
                 value: child,
             }));
         }
-        else if (typeof child === "object") {
-            if (isJsxNode(child)) {
-                elements.push(child);
-            }
-            else {
-                elements.push(createJsxNode({
-                    kind: "value",
-                    value: child,
-                }));
-            }
+        else if (isJsxNode(child)) {
+            // this is jsx node from our jsx parser
+            elements.push(child);
         }
         else {
-            throw new Error(`invalid child type: ${typeof child}`);
+            // can be symbol, function, object, bigint, or developer-defined custom value
+            elements.push(createJsxNode({
+                kind: "custom",
+                value: child,
+            }));
         }
     }
     return elements;
@@ -39,12 +36,12 @@ function parseAttributes(props) {
     const attrs = {};
     for (const key in props) {
         if (key === "children") {
-            // ไม่ต้องสนใจ children เพราะมีการ parse แยกต่างหาก
+            // skip children because it's already parsed separately
             continue;
         }
         const value = props[key];
         if (typeof value === "undefined" || value === null || value === false) {
-            // ไม่ render ค่าที่เป็น undefined, null, false (ถ้าอยากให้แสดง key="false" ให้ attr value เป็น string "false")
+            // skip undefined, null, false values (if you want to show key="false" as attr value, make attr value a string "false")
             continue;
         }
         if (value === true) {
@@ -58,7 +55,9 @@ function parseAttributes(props) {
 }
 function parse(type, props) {
     if (typeof type === "function") {
-        return type(props ?? {});
+        return parse(undefined, {
+            children: type(props ?? {}),
+        });
     }
     if (typeof type === "string") {
         return createJsxNode({

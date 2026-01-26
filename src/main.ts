@@ -1,10 +1,10 @@
 import { JSX_SYMBOL } from "./constants.js";
-import type { JsxElementNode, JsxElementNodeCreateInput, JsxFragmentNodeCreateInput, JsxNode, JsxNodeWalkHandlers, JsxValueNode, JsxValueNodeCreateInput } from "./types.js";
+import type { JsxCustomValueNode, JsxCustomValueNodeCreateInput, JsxElementNode, JsxElementNodeCreateInput, JsxFragmentNodeCreateInput, JsxNode, JsxNodeWalkHandlers, JsxPrimitiveValueNode, JsxPrimitiveValueNodeCreateInput } from "./types.js";
 
 export type * from "./types.js";
 
 // --- HELPER ---
-export function createJsxNode(input: JsxElementNodeCreateInput | JsxFragmentNodeCreateInput | JsxValueNodeCreateInput): JsxNode {
+export function createJsxNode(input: JsxElementNodeCreateInput | JsxFragmentNodeCreateInput | JsxPrimitiveValueNodeCreateInput | JsxCustomValueNodeCreateInput): JsxNode {
   return {
     [JSX_SYMBOL]: true,
     ...input,
@@ -63,16 +63,21 @@ function escapeHTML(str: string): string {
   return str.replace(/[&<>"']/g, (m) => HTML_ENTITIES[m] ?? m);
 }
 
-function renderValue(value: JsxValueNode["value"]) {
+function renderCustomValue(value: JsxCustomValueNode["value"]): string {
+  if (isJsxNode(value)) {
+    return renderToString(value);
+  }
+
+  // developer who using this jsx runtime may custom data type but forgot to handle it
+  throw new Error(`unsupported value type: ${typeof value}`);
+}
+
+function renderPrimitive(value: JsxPrimitiveValueNode["value"]) {
   if (typeof value === "string") {
     return value;
   }
 
-  else if (typeof value === "number" || typeof value === "boolean") {
-    return String(value);
-  }
-
-  return JSON.stringify(value);
+  return String(value);
 }
 
 function renderChildren(elements: JsxNode[]) {
@@ -97,7 +102,7 @@ function renderAttributes(attrs: JsxElementNode["attrs"]) {
       entries.push(` ${key}="${value}"`);
     }
 
-    else if (typeof value === "number") {
+    else if (typeof value === "number" || Symbol.toPrimitive in value) {
       entries.push(` ${key}="${String(value)}"`);
     }
 
@@ -131,7 +136,9 @@ export function renderToString(element: JsxNode) {
       return renderElement(element);
     case "fragment":
       return renderChildren(element.children);
-    case "value":
-      return renderValue(element.value);
+    case "primitive":
+      return renderPrimitive(element.value);
+    case "custom":
+      return renderCustomValue(element.value);
   }
 }

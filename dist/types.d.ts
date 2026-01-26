@@ -99,9 +99,14 @@ export type JsxFragmentNodeCreateInput = {
     kind: "fragment";
     children: JsxNode[];
 };
-export type JsxValueNodeCreateInput = {
-    kind: "value";
-    value: string | number | boolean | object;
+export type JsxPrimitiveValueNodeCreateInput = {
+    kind: "primitive";
+    value: string | number | boolean;
+};
+export type JsxCustomValueNodeCreateInput = {
+    kind: "custom";
+    /** @description unprocessed value can be symbol, function, object, or bigint, processed value must be JsxNode */
+    value: symbol | Function | object | bigint | JsxNode;
 };
 export type JsxElementNode = JsxElementNodeCreateInput & {
     [JSX_SYMBOL]: true;
@@ -109,10 +114,13 @@ export type JsxElementNode = JsxElementNodeCreateInput & {
 export type JsxFragmentNode = JsxFragmentNodeCreateInput & {
     [JSX_SYMBOL]: true;
 };
-export type JsxValueNode = JsxValueNodeCreateInput & {
+export type JsxPrimitiveValueNode = JsxPrimitiveValueNodeCreateInput & {
     [JSX_SYMBOL]: true;
 };
-export type JsxNode = JsxElementNode | JsxFragmentNode | JsxValueNode;
+export type JsxCustomValueNode = JsxCustomValueNodeCreateInput & {
+    [JSX_SYMBOL]: true;
+};
+export type JsxNode = JsxElementNode | JsxFragmentNode | JsxPrimitiveValueNode | JsxCustomValueNode;
 export type JsxNodeWalkHandlers = {
     enter?: (element: JsxNode) => void;
     exit?: (element: JsxNode) => void;

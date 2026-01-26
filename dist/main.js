@@ -50,14 +50,18 @@ const HTML_ENTITIES = {
 function escapeHTML(str) {
     return str.replace(/[&<>"']/g, (m) => HTML_ENTITIES[m] ?? m);
 }
-function renderValue(value) {
+function renderCustomValue(value) {
+    if (isJsxNode(value)) {
+        return renderToString(value);
+    }
+    // developer who using this jsx runtime may custom data type but forgot to handle it
+    throw new Error(`unsupported value type: ${typeof value}`);
+}
+function renderPrimitive(value) {
     if (typeof value === "string") {
         return value;
     }
-    else if (typeof value === "number" || typeof value === "boolean") {
-        return String(value);
-    }
-    return JSON.stringify(value);
+    return String(value);
 }
 function renderChildren(elements) {
     const texts = [];
@@ -75,7 +79,7 @@ function renderAttributes(attrs) {
         else if (typeof value === "string") {
             entries.push(` ${key}="${value}"`);
         }
-        else if (typeof value === "number") {
+        else if (typeof value === "number" || Symbol.toPrimitive in value) {
             entries.push(` ${key}="${String(value)}"`);
         }
         else if (typeof value === "object") {
@@ -101,7 +105,9 @@ export function renderToString(element) {
             return renderElement(element);
         case "fragment":
             return renderChildren(element.children);
-        case "value":
-            return renderValue(element.value);
+        case "primitive":
+            return renderPrimitive(element.value);
+        case "custom":
+            return renderCustomValue(element.value);
     }
 }

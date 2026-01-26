@@ -3,12 +3,12 @@ import type { JSX, JsxComponent, JsxElementNode, JsxNode } from "./types.js";
 
 export type * from "./types.js";
 
-function isIterable(value: any): value is Iterable<any> {
-  return value && typeof value[Symbol.iterator] === "function";
+function isIterableOrArray(value: any): value is Iterable<any> {
+  return Array.isArray(value) || (value && typeof value === "object" && typeof value[Symbol.iterator] === "function");
 }
 
 function parseChildren(children: any): JsxNode[] {
-  const iterable = Array.isArray(children) || isIterable(children) ? children : [children];
+  const iterable = isIterableOrArray(children) ? children : [children];
   const elements: JSX.Element[] = [];
 
   for (const child of iterable) {
@@ -18,26 +18,22 @@ function parseChildren(children: any): JsxNode[] {
 
     else if (typeof child === "string" || typeof child === "number" || typeof child === "boolean") {
       elements.push(createJsxNode({
-        kind: "value",
+        kind: "primitive",
         value: child,
       }));
     }
 
-    else if (typeof child === "object") {
-      if (isJsxNode(child)) {
-        elements.push(child);
-      }
-
-      else {
-        elements.push(createJsxNode({
-          kind: "value",
-          value: child,
-        }));
-      }
+    else if (isJsxNode(child)) {
+      // this is jsx node from our jsx parser
+      elements.push(child);
     }
 
     else {
-      throw new Error(`invalid child type: ${typeof child}`);
+      // can be symbol, function, object, bigint, or developer-defined custom value
+      elements.push(createJsxNode({
+        kind: "custom",
+        value: child,
+      }));
     }
   }
 
@@ -53,14 +49,14 @@ function parseAttributes(props?: Record<string, any>): JsxElementNode["attrs"] {
 
   for (const key in props) {
     if (key === "children") {
-      // ไม่ต้องสนใจ children เพราะมีการ parse แยกต่างหาก
+      // skip children because it's already parsed separately
       continue;
     }
 
     const value = props[key];
 
     if (typeof value === "undefined" || value === null || value === false) {
-      // ไม่ render ค่าที่เป็น undefined, null, false (ถ้าอยากให้แสดง key="false" ให้ attr value เป็น string "false")
+      // skip undefined, null, false values (if you want to show key="false" as attr value, make attr value a string "false")
       continue;
     }
 
@@ -78,7 +74,9 @@ function parseAttributes(props?: Record<string, any>): JsxElementNode["attrs"] {
 
 function parse(type: JsxComponent<any> | string | undefined, props?: Record<string, any>): JsxNode {
   if (typeof type === "function") {
-    return type(props ?? {});
+    return parse(undefined, {
+      children: type(props ?? {}),
+    });
   }
 
   if (typeof type === "string") {
