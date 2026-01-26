@@ -1,4 +1,5 @@
 import { type FieldPath } from "@tinyst/fieldpath";
+import { type JsxNode } from "../main.js";
 export type ComponentInstance<T extends {
     state: {
         [key: string]: any;
@@ -74,3 +75,4 @@ export type ClassValues = {
 };
 export declare function cn<T extends ClassValues>(props: T): string;
 export declare function falsy(value: FieldPath<any>): string;
+export declare function resolveSyntax(root: JsxNode): void;

@@ -1,5 +1,7 @@
 import { fieldPath, type FieldPath } from "@tinyst/fieldpath";
+import { jsxNodeWalk, type JsxElementNode, type JsxNode } from "../main.js";
 
+// --- CLIENT ---
 export type ComponentInstance<T extends {
   state: {
     [key: string]: any;
@@ -67,6 +69,7 @@ export function define<T extends {
   };
 }
 
+// --- SERVER ---
 export function infer<T extends {
   state: {
     [key: string]: any;
@@ -118,4 +121,32 @@ export function cn<T extends ClassValues>(props: T): string {
 
 export function falsy(value: FieldPath<any>): string {
   return `!${value}`;
+}
+
+export function resolveSyntax(root: JsxNode) {
+  jsxNodeWalk(root, {
+    enter(node) {
+      if (node.kind === "element") {
+        const entries = Object.entries(node.attrs);
+        const attrs: JsxElementNode["attrs"] = {};
+
+        // we can't write AlpineJS syntax directly on JSX
+        for (const [name, value] of entries) {
+          if (name.startsWith("x-on-")) {
+            attrs[`@${name.slice(5).split("_").join(".")}`] = value;
+          }
+
+          else if (name.startsWith("x-bind-")) {
+            attrs[`:${name.slice(7)}`] = value;
+          }
+
+          else {
+            attrs[name] = value;
+          }
+        }
+
+        node.attrs = attrs;
+      }
+    }
+  });
 }
