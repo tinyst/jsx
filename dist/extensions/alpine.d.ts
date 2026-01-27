@@ -1,5 +1,4 @@
-import { type FieldPath } from "@tinyst/fieldpath";
-import { type JsxNode } from "../main.js";
+/** @deprecated this extension will move out from this repository to separated package */
 export type ComponentInstance<T extends {
     state: {
         [key: string]: any;
@@ -66,16 +65,9 @@ export declare function infer<T extends {
     };
 }>(component: ReturnType<typeof define<T>>): {
     name: string;
-    state: FieldPath<T["state"]>;
-    refs: FieldPath<T["refs"] extends object ? T["refs"] : {}>;
-    actions: FieldPath<T["actions"] extends object ? T["actions"] : {}>;
+    state: import("@tinyst/fieldpath").FieldPath<T["state"]>;
+    refs: import("@tinyst/fieldpath").FieldPath<T["refs"] extends object ? T["refs"] : {}>;
+    actions: import("@tinyst/fieldpath").FieldPath<T["actions"] extends object ? T["actions"] : {}>;
 };
-export type ClassValues = {
-    [key: string]: string | number | boolean | ClassValues;
-};
-export declare function cn<T extends ClassValues>(props: T): string;
-export declare function falsy(value: FieldPath<any>): string;
-/** @description resolve AlpineJS syntax on JSX node */
-export declare function resolveAlpineSyntaxOnJsx(root: JsxNode): void;
 /** @description using regex to replace alpine syntax on HTML directly */
 export declare function resolveAlpineSyntax(html: string): string;
