@@ -1,7 +1,7 @@
 {
   "name": "@tinyst/jsx",
   "author": "Wirune Kaewjai",
-  "version": "0.0.7",
+  "version": "0.1.0",
   "type": "module",
   "files": [
     "dist"
