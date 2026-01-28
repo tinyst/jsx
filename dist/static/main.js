@@ -1,10 +1,10 @@
-import { ROOT_TAGS, SELF_CLOSING_TAGS } from "../constants.js";
+import { JSX_SYMBOL, ROOT_TAGS, SELF_CLOSING_TAGS } from "../constants.js";
 import { escapeHTML } from "../helpers.js";
 function isIterableOrArray(value) {
     return Array.isArray(value) || (value && typeof value === "object" && typeof value[Symbol.iterator] === "function");
 }
 function isJsxNode(value) {
-    return value && typeof value === "object" && "type" in value && "props" in value;
+    return value && typeof value === "object" && JSX_SYMBOL in value;
 }
 function renderChildren(children) {
     if (typeof children === "undefined" || children === null) {
@@ -17,11 +17,11 @@ function renderChildren(children) {
         return String(children);
     }
     else if (isIterableOrArray(children)) {
-        const entries = [];
+        let text = "";
         for (const child of children) {
-            entries.push(renderChildren(child));
+            text += renderChildren(child);
         }
-        return entries.join("");
+        return text;
     }
     else if (typeof children === "object") {
         if (isJsxNode(children)) {
@@ -37,7 +37,7 @@ function renderAttrs(props) {
     if (!props) {
         return "";
     }
-    const entries = [];
+    let text = "";
     for (const key in props) {
         if (key === "children") {
             // skip children because it's already parsed separately
@@ -49,22 +49,22 @@ function renderAttrs(props) {
             continue;
         }
         if (value === true) {
-            entries.push(` ${key}`);
+            text += ` ${key}`;
         }
         else if (typeof value === "string") {
-            entries.push(` ${key}="${value}"`);
+            text += ` ${key}="${value}"`;
         }
         else if (typeof value === "number" || Symbol.toPrimitive in value) {
-            entries.push(` ${key}="${String(value)}"`);
+            text += ` ${key}="${String(value)}"`;
         }
         else if (typeof value === "object") {
-            entries.push(` ${key}="${escapeHTML(JSON.stringify(value))}"`);
+            text += ` ${key}="${escapeHTML(JSON.stringify(value))}"`;
         }
         else {
             throw new Error(`invalid attribute value type: ${typeof value}`);
         }
     }
-    return entries.join("");
+    return text;
 }
 function render(type, props) {
     if (typeof type === "function") {
@@ -72,15 +72,15 @@ function render(type, props) {
         return renderChildren(children);
     }
     else if (typeof type === "string") {
-        const entries = [];
+        let text = "";
         if (ROOT_TAGS.has(type)) {
-            entries.push("<!DOCTYPE html>");
+            text += "<!DOCTYPE html>";
         }
-        entries.push(`<${type}${renderAttrs(props)}>`);
+        text += `<${type}${renderAttrs(props)}>`;
         if (!SELF_CLOSING_TAGS.has(type)) {
-            entries.push(renderChildren(props.children), `</${type}>`);
+            text += renderChildren(props.children) + `</${type}>`;
         }
-        return entries.join("");
+        return text;
     }
     else {
         // fragment

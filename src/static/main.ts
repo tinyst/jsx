@@ -1,4 +1,4 @@
-import { ROOT_TAGS, SELF_CLOSING_TAGS } from "../constants.js";
+import { JSX_SYMBOL, ROOT_TAGS, SELF_CLOSING_TAGS } from "../constants.js";
 import { escapeHTML } from "../helpers.js";
 import type { JSX } from "./types.js";
 
@@ -9,7 +9,7 @@ function isIterableOrArray(value: any): value is Iterable<any> {
 }
 
 function isJsxNode(value: any): value is JSX.Element {
-  return value && typeof value === "object" && "type" in value && "props" in value;
+  return value && typeof value === "object" && JSX_SYMBOL in value;
 }
 
 function renderChildren(children: Function | string | number | boolean | object | any[] | undefined | null) {
@@ -26,13 +26,13 @@ function renderChildren(children: Function | string | number | boolean | object 
   }
 
   else if (isIterableOrArray(children)) {
-    const entries: string[] = [];
+    let text = "";
 
     for (const child of children) {
-      entries.push(renderChildren(child));
+      text += renderChildren(child);
     }
 
-    return entries.join("");
+    return text;
   }
 
   else if (typeof children === "object") {
@@ -53,7 +53,7 @@ function renderAttrs(props?: Record<string, any>) {
     return "";
   }
 
-  const entries: string[] = [];
+  let text = "";
 
   for (const key in props) {
     if (key === "children") {
@@ -69,19 +69,19 @@ function renderAttrs(props?: Record<string, any>) {
     }
 
     if (value === true) {
-      entries.push(` ${key}`);
+      text += ` ${key}`;
     }
 
     else if (typeof value === "string") {
-      entries.push(` ${key}="${value}"`);
+      text += ` ${key}="${value}"`;
     }
 
     else if (typeof value === "number" || Symbol.toPrimitive in value) {
-      entries.push(` ${key}="${String(value)}"`);
+      text += ` ${key}="${String(value)}"`;
     }
 
     else if (typeof value === "object") {
-      entries.push(` ${key}="${escapeHTML(JSON.stringify(value))}"`);
+      text += ` ${key}="${escapeHTML(JSON.stringify(value))}"`;
     }
 
     else {
@@ -89,7 +89,7 @@ function renderAttrs(props?: Record<string, any>) {
     }
   }
 
-  return entries.join("");
+  return text;
 }
 
 function render(type: Function | string | undefined, props: Record<string, any>): string {
@@ -99,19 +99,19 @@ function render(type: Function | string | undefined, props: Record<string, any>)
   }
 
   else if (typeof type === "string") {
-    const entries: string[] = [];
+    let text = "";
 
     if (ROOT_TAGS.has(type)) {
-      entries.push("<!DOCTYPE html>");
+      text += "<!DOCTYPE html>";
     }
 
-    entries.push(`<${type}${renderAttrs(props)}>`);
+    text += `<${type}${renderAttrs(props)}>`;
 
     if (!SELF_CLOSING_TAGS.has(type)) {
-      entries.push(renderChildren(props.children), `</${type}>`);
+      text += renderChildren(props.children) + `</${type}>`;
     }
 
-    return entries.join("");
+    return text;
   }
 
   else {

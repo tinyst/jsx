@@ -1,3 +1,5 @@
+import type { JSX_SYMBOL } from "../constants.js";
+
 // TBD: แยก attributes ให้ตรงตาม element
 export type JsxAttributeValue = string | number | boolean | object | null | undefined;
 export type JsxAttributes = Partial<{
@@ -91,6 +93,7 @@ export type JsxAttributes = Partial<{
 export type JsxChildren = string | number | boolean | object | null | undefined;
 export type JsxComponent<T extends object = {}> = (props: T) => JsxNode;
 export type JsxNode = {
+  [JSX_SYMBOL]: true;
   type: string | Function | undefined;
   props: Record<string, any>;
 };
