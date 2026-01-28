@@ -1,4 +1,5 @@
-import { JSX_SYMBOL } from "./constants.js";
+import { JSX_SYMBOL, ROOT_TAGS, SELF_CLOSING_TAGS } from "./constants.js";
+import { escapeHTML } from "./helpers.js";
 import type { JsxCustomValueNode, JsxCustomValueNodeCreateInput, JsxElementNode, JsxElementNodeCreateInput, JsxFragmentNodeCreateInput, JsxNode, JsxNodeWalkHandler, JsxPrimitiveValueNode, JsxPrimitiveValueNodeCreateInput } from "./types.js";
 
 export type * from "./types.js";
@@ -34,41 +35,6 @@ export function jsxNodeWalk(node: JsxNode, handler: JsxNodeWalkHandler) {
 }
 
 // --- RENDER ---
-const ROOT_TAGS = new Set([
-  "html"
-]);
-
-const SELF_CLOSING_TAGS = new Set([
-  "area",
-  "base",
-  "br",
-  "col",
-  "command",
-  "embed",
-  "hr",
-  "img",
-  "input",
-  "keygen",
-  "link",
-  "meta",
-  "param",
-  "source",
-  "track",
-  "wbr"
-]);
-
-const HTML_ENTITIES: Record<string, string> = {
-  "&": "&amp;",
-  "<": "&lt;",
-  ">": "&gt;",
-  '"': "&quot;",
-  "'": "&#39;"
-};
-
-function escapeHTML(str: string): string {
-  return str.replace(/[&<>"']/g, (m) => HTML_ENTITIES[m] ?? m);
-}
-
 function renderCustomValue(value: JsxCustomValueNode["value"]): string {
   if (isJsxNode(value)) {
     return renderToString(value);

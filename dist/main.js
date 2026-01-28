@@ -1,4 +1,5 @@
-import { JSX_SYMBOL } from "./constants.js";
+import { JSX_SYMBOL, ROOT_TAGS, SELF_CLOSING_TAGS } from "./constants.js";
+import { escapeHTML } from "./helpers.js";
 // --- HELPER ---
 export function createJsxNode(input) {
     return {
@@ -24,37 +25,6 @@ export function jsxNodeWalk(node, handler) {
     handler.exit?.(node);
 }
 // --- RENDER ---
-const ROOT_TAGS = new Set([
-    "html"
-]);
-const SELF_CLOSING_TAGS = new Set([
-    "area",
-    "base",
-    "br",
-    "col",
-    "command",
-    "embed",
-    "hr",
-    "img",
-    "input",
-    "keygen",
-    "link",
-    "meta",
-    "param",
-    "source",
-    "track",
-    "wbr"
-]);
-const HTML_ENTITIES = {
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;"
-};
-function escapeHTML(str) {
-    return str.replace(/[&<>"']/g, (m) => HTML_ENTITIES[m] ?? m);
-}
 function renderCustomValue(value) {
     if (isJsxNode(value)) {
         return renderToString(value);
