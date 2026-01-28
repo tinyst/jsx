@@ -53,53 +53,59 @@ function renderPrimitive(value: JsxPrimitiveValueNode["value"]) {
 }
 
 function renderChildren(elements: JsxNode[]) {
-  const texts: string[] = [];
+  let text = "";
 
   for (const element of elements) {
-    texts.push(renderToString(element));
+    text += renderToString(element);
   }
 
-  return texts.join("");
+  return text;
 }
 
 function renderAttributes(attrs: JsxElementNode["attrs"]) {
-  const entries: string[] = [];
+  let text = "";
 
-  for (const [key, value] of Object.entries(attrs)) {
+  for (const key in attrs) {
+    const value = attrs[key];
+
+    if (typeof value === "undefined" || value === null) {
+      continue;
+    }
+
     if (value === true) {
-      entries.push(` ${key}`);
+      text += ` ${key}`;
     }
 
     else if (typeof value === "string") {
-      entries.push(` ${key}="${value}"`);
+      text += ` ${key}="${value}"`;
     }
 
     else if (typeof value === "number" || Symbol.toPrimitive in value) {
-      entries.push(` ${key}="${String(value)}"`);
+      text += ` ${key}="${String(value)}"`;
     }
 
     else if (typeof value === "object") {
-      entries.push(` ${key}="${escapeHTML(JSON.stringify(value))}"`);
+      text += ` ${key}="${escapeHTML(JSON.stringify(value))}"`;
     }
   }
 
-  return entries.join("");
+  return text;
 }
 
 function renderElement(element: JsxElementNode): string {
-  const texts: string[] = [];
+  let text = "";
 
   if (ROOT_TAGS.has(element.name)) {
-    texts.push("<!DOCTYPE html>");
+    text += "<!DOCTYPE html>";
   }
 
-  texts.push("<", element.name, renderAttributes(element.attrs), ">");
+  text += `<${element.name}${renderAttributes(element.attrs)}>`;
 
   if (!SELF_CLOSING_TAGS.has(element.name)) {
-    texts.push(renderChildren(element.children), "</", element.name, ">");
+    text += renderChildren(element.children) + `</${element.name}>`;
   }
 
-  return texts.join("");
+  return text;
 }
 
 export function renderToString(element: JsxNode) {
