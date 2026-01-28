@@ -90,7 +90,10 @@ export type JsxAttributes = Partial<{
 
 export type JsxChildren = string | number | boolean | object | null | undefined;
 export type JsxComponent<T extends object = {}> = (props: T) => JsxNode;
-export type JsxNode = string;
+export type JsxNode = {
+  type: string | Function | undefined;
+  props: Record<string, any>;
+};
 
 export declare namespace JSX {
   type Element = JsxNode;

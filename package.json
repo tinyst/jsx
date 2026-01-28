@@ -16,8 +16,8 @@
       "types": "./dist/static/runtime.d.ts"
     },
     "./static": {
-      "import": "./dist/static/types.js",
-      "types": "./dist/static/types.d.ts"
+      "import": "./dist/static/main.js",
+      "types": "./dist/static/main.d.ts"
     },
     "./jsx-dev-runtime": {
       "import": "./dist/runtime.js",
