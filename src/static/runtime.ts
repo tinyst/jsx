@@ -2,6 +2,8 @@ import { ROOT_TAGS, SELF_CLOSING_TAGS } from "../constants.js";
 import { escapeHTML } from "../helpers.js";
 import type { JSX } from "./types.js";
 
+export type * from "./types.js";
+
 type Write = (chunk: string) => void;
 
 function isIterableOrArray(value: any): value is Iterable<any> {
