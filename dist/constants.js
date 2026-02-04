@@ -1,4 +1,4 @@
-export const JSX_SYMBOL = Symbol("jsx");
+export const JSX_SYMBOL = Symbol.for("jsx");
 export const ROOT_TAGS = new Set([
     "html"
 ]);
