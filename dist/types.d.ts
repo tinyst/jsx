@@ -83,47 +83,17 @@ export type JsxAttributes = Partial<{
     value: JsxAttributeValue;
     width: JsxAttributeValue;
     wrap: JsxAttributeValue;
+    dangerouslySetInnerHTML: {
+        __html?: string;
+    };
     [key: string]: any;
 }>;
 export type JsxChildren = string | number | boolean | object | null | undefined;
 export type JsxComponent<T extends object = {}> = (props: T) => JsxNode;
-export type JsxElementNodeCreateInput = {
-    kind: "element";
-    name: string;
-    attrs: {
-        [key in keyof JsxAttributes]: string | number | true | object;
-    };
-    children: JsxNode[];
-};
-export type JsxFragmentNodeCreateInput = {
-    kind: "fragment";
-    children: JsxNode[];
-};
-export type JsxPrimitiveValueNodeCreateInput = {
-    kind: "primitive";
-    value: string | number | boolean;
-};
-export type JsxCustomValueNodeCreateInput = {
-    kind: "custom";
-    /** @description unprocessed value can be symbol, function, object, or bigint, processed value must be JsxNode */
-    value: symbol | Function | object | bigint | JsxNode;
-};
-export type JsxElementNode = JsxElementNodeCreateInput & {
+export type JsxNode = {
     [JSX_SYMBOL]: true;
-};
-export type JsxFragmentNode = JsxFragmentNodeCreateInput & {
-    [JSX_SYMBOL]: true;
-};
-export type JsxPrimitiveValueNode = JsxPrimitiveValueNodeCreateInput & {
-    [JSX_SYMBOL]: true;
-};
-export type JsxCustomValueNode = JsxCustomValueNodeCreateInput & {
-    [JSX_SYMBOL]: true;
-};
-export type JsxNode = JsxElementNode | JsxFragmentNode | JsxPrimitiveValueNode | JsxCustomValueNode;
-export type JsxNodeWalkHandler = {
-    enter?: (element: JsxNode) => void;
-    exit?: (element: JsxNode) => void;
+    type: string | Function | undefined;
+    props: Record<string, any>;
 };
 export declare namespace JSX {
     type Element = JsxNode;

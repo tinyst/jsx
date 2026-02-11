@@ -7,18 +7,6 @@
     "dist"
   ],
   "exports": {
-    "./static/jsx-dev-runtime": {
-      "import": "./dist/static/runtime.js",
-      "types": "./dist/static/runtime.d.ts"
-    },
-    "./static/jsx-runtime": {
-      "import": "./dist/static/runtime.js",
-      "types": "./dist/static/runtime.d.ts"
-    },
-    "./static": {
-      "import": "./dist/static/main.js",
-      "types": "./dist/static/main.d.ts"
-    },
     "./jsx-dev-runtime": {
       "import": "./dist/runtime.js",
       "types": "./dist/runtime.d.ts"
@@ -34,11 +22,11 @@
   },
   "scripts": {
     "build": "rm -rf dist && tsc",
-    "prepare": "husky install"
+    "prepare": "husky"
   },
   "devDependencies": {
-    "@types/node": "^25.0.10",
-    "husky": "^8.0.0",
-    "typescript": "^5.9.3"
+    "@types/node": "25.0.10",
+    "husky": "9.1.7",
+    "typescript": "5.9.3"
   }
 }

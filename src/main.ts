@@ -1,74 +1,70 @@
 import { JSX_SYMBOL, ROOT_TAGS, SELF_CLOSING_TAGS } from "./constants.js";
 import { escapeHTML } from "./helpers.js";
-import type { JsxCustomValueNode, JsxCustomValueNodeCreateInput, JsxElementNode, JsxElementNodeCreateInput, JsxFragmentNodeCreateInput, JsxNode, JsxNodeWalkHandler, JsxPrimitiveValueNode, JsxPrimitiveValueNodeCreateInput } from "./types.js";
+import type { JSX } from "./types.js";
 
 export type * from "./types.js";
 
-// --- HELPER ---
-export function createJsxNode(input: JsxElementNodeCreateInput | JsxFragmentNodeCreateInput | JsxPrimitiveValueNodeCreateInput | JsxCustomValueNodeCreateInput): JsxNode {
-  return {
-    [JSX_SYMBOL]: true,
-    ...input,
-  };
+function isIterableOrArray(value: any): value is Iterable<any> {
+  return Array.isArray(value) || (value && typeof value === "object" && typeof value[Symbol.iterator] === "function");
 }
 
-export function isJsxNode(node: any): node is JsxNode {
-  return node && typeof node === "object" && JSX_SYMBOL in node;
+function isJsxNode(value: any): value is JSX.Element {
+  return value && typeof value === "object" && JSX_SYMBOL in value;
 }
 
-export function jsxNodeWalk(node: JsxNode, handler: JsxNodeWalkHandler) {
-  handler.enter?.(node);
+function renderChildren(children: Function | string | number | boolean | object | any[] | undefined | null) {
+  if (typeof children === "undefined" || children === null) {
+    return "";
+  }
 
-  if (node.kind === "element" || node.kind === "fragment") {
-    for (const child of node.children) {
-      jsxNodeWalk(child, handler);
+  else if (typeof children === "string") {
+    return children;
+  }
+
+  else if (typeof children === "number" || typeof children === "boolean" || Symbol.toPrimitive in children) {
+    return String(children);
+  }
+
+  else if (isIterableOrArray(children)) {
+    let text = "";
+
+    for (const child of children) {
+      text += renderChildren(child);
     }
+
+    return text;
   }
 
-  else if (node.kind === "custom") {
-    if (isJsxNode(node.value)) {
-      jsxNodeWalk(node.value, handler);
+  else if (typeof children === "object") {
+    if (isJsxNode(children)) {
+      return render(children.type, children.props);
     }
+
+    return JSON.stringify(children);
   }
 
-  handler.exit?.(node);
+  else {
+    throw new Error(`invalid child type: ${typeof children}`);
+  }
 }
 
-// --- RENDER ---
-function renderCustomValue(value: JsxCustomValueNode["value"]): string {
-  if (isJsxNode(value)) {
-    return renderToString(value);
+function renderAttrs(props?: Record<string, any>) {
+  if (!props) {
+    return "";
   }
 
-  // developer who using this jsx runtime may custom data type but forgot to handle it
-  throw new Error(`unsupported value type: ${typeof value}`);
-}
-
-function renderPrimitive(value: JsxPrimitiveValueNode["value"]) {
-  if (typeof value === "string") {
-    return value;
-  }
-
-  return String(value);
-}
-
-function renderChildren(elements: JsxNode[]) {
   let text = "";
 
-  for (const element of elements) {
-    text += renderToString(element);
-  }
+  for (const key in props) {
+    if (key === "children" || key === "dangerouslySetInnerHTML") {
+      // skip children because it's already parsed separately
+      continue;
+    }
 
-  return text;
-}
+    const value = props[key];
 
-function renderAttributes(attrs: JsxElementNode["attrs"]) {
-  let text = "";
-
-  for (const key in attrs) {
-    const value = attrs[key];
-
-    if (typeof value === "undefined" || value === null) {
+    if (typeof value === "undefined" || value === null || value === false) {
+      // skip undefined, null, false values (if you want to show key="false" as attr value, make attr value a string "false")
       continue;
     }
 
@@ -87,36 +83,43 @@ function renderAttributes(attrs: JsxElementNode["attrs"]) {
     else if (typeof value === "object") {
       text += ` ${key}="${escapeHTML(JSON.stringify(value))}"`;
     }
+
+    else {
+      throw new Error(`invalid attribute value type: ${typeof value}`);
+    }
   }
 
   return text;
 }
 
-function renderElement(element: JsxElementNode): string {
-  let text = "";
-
-  if (ROOT_TAGS.has(element.name)) {
-    text += "<!DOCTYPE html>";
+function render(type: Function | string | undefined, props: Record<string, any>): string {
+  if (typeof type === "function") {
+    const children = type(props ?? {});
+    return renderChildren(children);
   }
 
-  text += `<${element.name}${renderAttributes(element.attrs)}>`;
+  else if (typeof type === "string") {
+    let text = "";
 
-  if (!SELF_CLOSING_TAGS.has(element.name)) {
-    text += renderChildren(element.children) + `</${element.name}>`;
+    if (ROOT_TAGS.has(type)) {
+      text += "<!DOCTYPE html>";
+    }
+
+    text += `<${type}${renderAttrs(props)}>`;
+
+    if (!SELF_CLOSING_TAGS.has(type)) {
+      text += renderChildren(props.children ?? props.dangerouslySetInnerHTML?.__html) + `</${type}>`;
+    }
+
+    return text;
   }
 
-  return text;
+  else {
+    // fragment
+    return renderChildren(props.children);
+  }
 }
 
-export function renderToString(element: JsxNode) {
-  switch (element.kind) {
-    case "element":
-      return renderElement(element);
-    case "fragment":
-      return renderChildren(element.children);
-    case "primitive":
-      return renderPrimitive(element.value);
-    case "custom":
-      return renderCustomValue(element.value);
-  }
+export function renderToString(node: JSX.Element): string {
+  return render(node.type, node.props);
 }
