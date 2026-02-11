@@ -86,6 +86,11 @@ export type JsxAttributes = Partial<{
   width: JsxAttributeValue;
   wrap: JsxAttributeValue;
 
+  // compat
+  dangerouslySetInnerHTML: {
+    __html?: string;
+  };
+
   // dynamic attributes
   [key: string]: any;
 }>;

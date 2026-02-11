@@ -83,6 +83,9 @@ export type JsxAttributes = Partial<{
     value: JsxAttributeValue;
     width: JsxAttributeValue;
     wrap: JsxAttributeValue;
+    dangerouslySetInnerHTML: {
+        __html?: string;
+    };
     [key: string]: any;
 }>;
 export type JsxChildren = string | number | boolean | object | null | undefined;

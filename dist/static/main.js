@@ -39,7 +39,7 @@ function renderAttrs(props) {
     }
     let text = "";
     for (const key in props) {
-        if (key === "children") {
+        if (key === "children" || key === "dangerouslySetInnerHTML") {
             // skip children because it's already parsed separately
             continue;
         }
@@ -78,7 +78,7 @@ function render(type, props) {
         }
         text += `<${type}${renderAttrs(props)}>`;
         if (!SELF_CLOSING_TAGS.has(type)) {
-            text += renderChildren(props.children) + `</${type}>`;
+            text += renderChildren(props.children ?? props.dangerouslySetInnerHTML?.__html) + `</${type}>`;
         }
         return text;
     }
